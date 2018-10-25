@@ -1,0 +1,23 @@
+---
+- name: Get release info
+  become: false
+  uri:
+    url: https://api.github.com/repos/hashicorp/terraform/releases/latest
+    headers:
+      Accept: 'application/vnd.github.v3+json'
+    return_content: yes
+  register: release_info
+  changed_when: false
+
+- name: Get Available Terraform Version
+  become: false
+  set_fact:
+    terraform_version: "{{ release_info.json.tag_name | replace('v', '') }}"
+  changed_when: false
+
+- name: Set Terraform Download URL
+  become: false
+  set_fact:
+    terraform_download_url: https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip
+  changed_when: false
+

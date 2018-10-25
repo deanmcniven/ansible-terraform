@@ -1,0 +1,20 @@
+---
+- name: Old Terraform Identifier
+  become: true
+  find:
+    paths: /opt/hashicorp
+    pattern: "terraform-\\d+\\.\\d+\\.\\d+$"
+    recurse: no
+    file_type: directory
+    use_regex: yes
+    excludes: "terraform-{{ terraform_version }}"
+  register: terraform_old_installations
+
+- name: Delete Old Terraform Installations
+  become: true
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ terraform_old_installations.files }}"
+  when: terraform_old_installations.matched != 0
+

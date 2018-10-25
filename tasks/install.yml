@@ -1,0 +1,32 @@
+---
+- name: Create Terraform Directory
+  become: true
+  file:
+    path: /opt/hashicorp/terraform-{{ terraform_version }}
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Download Terraform
+  become: true
+  get_url:
+    url: "{{ terraform_download_url }}"
+    dest: /opt/hashicorp/terraform-{{ terraform_version }}/terraform-{{ terraform_version }}.zip
+
+- name: Install Terraform
+  become: true
+  unarchive:
+    src: /opt/hashicorp/terraform-{{ terraform_version }}/terraform-{{ terraform_version }}.zip
+    dest: /opt/hashicorp/terraform-{{ terraform_version }}/
+
+- name: Creating symlink to terraform
+  become: true
+  file:
+    src: /opt/hashicorp/terraform-{{ terraform_version }}/terraform
+    dest: /usr/local/bin/terraform
+    owner: root
+    group: root
+    mode: 0755
+    state: link
+
